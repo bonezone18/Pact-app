@@ -25,7 +25,17 @@ export function createFakeSupabase() {
     return builder;
   };
 
+  const storageApi = {
+    upload: jest.fn(async (_path: string, _body: unknown, _opts?: unknown) => ({ data: {} as unknown, error: null as unknown })),
+    remove: jest.fn(async (_paths: string[]) => ({ data: [], error: null })),
+    createSignedUrls: jest.fn(async (paths: string[], _expires: number) => ({
+      data: paths.map((path) => ({ path, signedUrl: `https://signed.test/${path}`, error: null })),
+      error: null,
+    })),
+  };
+
   const client = {
+    storage: { from: jest.fn((_bucket: string) => storageApi) },
     auth: {
       getSession: jest.fn(async () => ({ data: { session } })),
       onAuthStateChange: jest.fn((listener: Listener) => {
@@ -75,10 +85,14 @@ export function createFakeSupabase() {
       for (const k of Object.keys(tables)) delete tables[k];
       client.rpc.mockReset();
       client.rpc.mockImplementation(async () => ({ data: null, error: null }));
+      storageApi.upload.mockReset();
+      storageApi.upload.mockImplementation(async () => ({ data: {}, error: null }));
+      storageApi.remove.mockClear();
+      storageApi.createSignedUrls.mockClear();
     },
   };
 
-  return { client, controls };
+  return { client, controls, storageApi };
 }
 
 /** Shared instance for jest.mock('@/lib/supabase', ...). */

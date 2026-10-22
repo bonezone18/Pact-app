@@ -27,3 +27,9 @@ jest.mock('expo-clipboard', () => ({
 jest.mock('react-native-nitro-modules', () => ({
   NitroModules: { createHybridObject: jest.fn() },
 }));
+
+// Online by default; tests that care about reconnects mock this themselves.
+jest.mock('expo-network', () => ({
+  addNetworkStateListener: jest.fn(() => ({ remove: jest.fn() })),
+  getNetworkStateAsync: jest.fn(async () => ({ isConnected: true, isInternetReachable: true })),
+}));

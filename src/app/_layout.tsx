@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
 import { colors } from '@/constants/theme';
+import { useCheckInSync } from '@/lib/check-in-sync';
 import { queryClient } from '@/lib/query-client';
 import { AuthProvider, useAuth } from '@/providers/auth-provider';
 
@@ -21,7 +22,8 @@ export default function RootLayout() {
 }
 
 function RootStack() {
-  const { ready } = useAuth();
+  const { ready, session } = useAuth();
+  useCheckInSync(!!session);
 
   // Keep the splash up until we know whether there is a session.
   useEffect(() => {
@@ -34,6 +36,7 @@ function RootStack() {
       <StatusBar style="light" />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}>
         <Stack.Screen name="paywall" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="check-in/[pactId]" options={{ presentation: 'fullScreenModal' }} />
       </Stack>
     </>
   );

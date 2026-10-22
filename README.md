@@ -12,7 +12,8 @@ Built server-first: Postgres functions and RLS on Supabase define the game; the 
 | 2 | Schema and security (tables, RLS, storage, sign-up trigger, pgTAP) | Done |
 | 3 | Game RPCs, streak engine, reminders, timezone changes, pg_cron | Done |
 | 4 | Apple/Google sign-in, create/invite/join, waiting room, universal links, landing page | Done |
-| 5–8 | Daily loop, notifications, monetization, hardening | Not started |
+| 5 | Dashboard, check-in (photo + tap), offline queue, reactions, nudges, history | Done |
+| 6–8 | Notifications, monetization, hardening | Not started |
 
 ## Layout
 
@@ -46,6 +47,12 @@ npx eas-cli login
 npx eas-cli init                  # writes extra.eas.projectId into app.json
 npx eas-cli update:configure      # writes updates.url
 ```
+
+## Check-ins and the offline queue
+
+A check-in shows as done the moment it's made. `src/lib/check-in-queue.ts` keeps it in MMKV and syncs it: upload the photo to `proofs/{pact}/{user}/{item}.jpg` (upsert), then call `check_in`. It retries on launch, on reconnect, on returning to the foreground and on a backoff that caps at 5 minutes. `already_checked_in` counts as success. A permanent refusal (`day_closed`, ...) clears the optimistic DONE, shows why and deletes the uploaded photo. `check-in-sync.ts` wires it to Supabase, the file system and the app lifecycle.
+
+The dashboard reads `pact_today`, which works out on the server each member's state on the caller's date.
 
 ## Sign-in setup
 
