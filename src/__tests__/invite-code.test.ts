@@ -29,8 +29,8 @@ describe('invite codes', () => {
   it('finds a code in clipboard text: bare, display form or link', () => {
     expect(extractInviteCode('K7MQ2X')).toBe('K7MQ2X');
     expect(extractInviteCode('  k7m-q2x\n')).toBe('K7MQ2X');
-    expect(extractInviteCode('https://pactapp.io/j/K7MQ2X')).toBe('K7MQ2X');
-    expect(extractInviteCode('Join my pact https://pactapp.io/j/K7MQ2X?ref=sms')).toBe('K7MQ2X');
+    expect(extractInviteCode('https://lockstep.app/j/K7MQ2X')).toBe('K7MQ2X');
+    expect(extractInviteCode('Join my streak https://lockstep.app/j/K7MQ2X?ref=sms')).toBe('K7MQ2X');
   });
 
   it('ignores clipboard text that does not match the format', () => {
@@ -42,18 +42,18 @@ describe('invite codes', () => {
   });
 
   it('reads codes from incoming links', () => {
-    expect(inviteCodeFromUrl('https://pactapp.io/j/K7MQ2X')).toBe('K7MQ2X');
-    expect(inviteCodeFromUrl('pact://j/k7mq2x')).toBe('K7MQ2X');
+    expect(inviteCodeFromUrl('https://lockstep.app/j/K7MQ2X')).toBe('K7MQ2X');
+    expect(inviteCodeFromUrl('lockstep://j/k7mq2x')).toBe('K7MQ2X');
     expect(inviteCodeFromUrl('/j/K7M-Q2X')).toBe('K7MQ2X');
-    expect(inviteCodeFromUrl('https://pactapp.io/j/NOPE')).toBeNull();
+    expect(inviteCodeFromUrl('https://lockstep.app/j/NOPE')).toBeNull();
     expect(inviteCodeFromUrl('/settings')).toBeNull();
   });
 
   it('builds the share link and message', () => {
-    expect(inviteUrl('k7m-q2x')).toBe('https://pactapp.io/j/K7MQ2X');
+    expect(inviteUrl('k7m-q2x')).toBe('https://lockstep.app/j/K7MQ2X');
     const msg = inviteShareMessage('K7MQ2X', 'Walk 1 mile');
     expect(msg).toContain('"Walk 1 mile"');
     expect(msg).toContain('K7M-Q2X');
-    expect(msg).toContain('https://pactapp.io/j/K7MQ2X');
+    expect(msg).toContain('https://lockstep.app/j/K7MQ2X');
   });
 });

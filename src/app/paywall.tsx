@@ -7,9 +7,9 @@ export default function Paywall() {
   return (
     <Screen style={{ justifyContent: 'center' }}>
       <Stack gap={8}>
-        <Title>Pact Pro</Title>
+        <Title>Lockstep Pro</Title>
         <Body muted>
-          Free covers one pact at a time. Pro unlocks more pacts, pods of up to 4, full history and custom reminder
+          Free covers one streak at a time. Pro unlocks more streaks, pods of up to 4, full history and custom reminder
           times.
         </Body>
         <Body muted>$1.99/month or $15/year. Upgrades are coming soon.</Body>

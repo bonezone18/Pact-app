@@ -33,9 +33,9 @@ export default function Home() {
       ))}
       {pacts.data?.length === 0 && (
         <Stack>
-          <Title>No pact yet</Title>
+          <Title>No streak yet</Title>
           <Body muted>Start one and invite someone, or join with their code.</Body>
-          <Button label="Start a pact" onPress={() => router.push('/create')} />
+          <Button label="Start a streak" onPress={() => router.push('/create')} />
           <Button label="I have a code" variant="secondary" onPress={() => router.push('/welcome')} />
         </Stack>
       )}

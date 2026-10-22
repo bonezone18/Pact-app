@@ -3,7 +3,7 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
-      "package_name": "io.pactapp.pact",
+      "package_name": "app.lockstep",
       "sha256_cert_fingerprints": ["YOUR:RELEASE:SIGNING:CERT:SHA256"]
     }
   }

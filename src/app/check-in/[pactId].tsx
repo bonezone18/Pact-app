@@ -129,7 +129,7 @@ function PhotoCheckIn({
       <Screen style={{ justifyContent: 'center' }}>
         <CloseButton />
         <Title>Camera access</Title>
-        <Body muted>Pact proofs are taken in the app, at the moment you do the thing. Gallery photos aren&apos;t used.</Body>
+        <Body muted>Lockstep proofs are taken in the app, at the moment you do the thing. Gallery photos aren&apos;t used.</Body>
         <Button label="Allow camera" onPress={requestPermission} />
       </Screen>
     );

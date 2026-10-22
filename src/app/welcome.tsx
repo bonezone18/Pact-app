@@ -41,7 +41,7 @@ export default function Welcome() {
   return (
     <Screen style={{ justifyContent: 'center' }}>
       <Stack gap={8}>
-        <Title>Pact</Title>
+        <Title>Lockstep</Title>
         <Body muted>One daily challenge. One shared streak. Miss a day and it resets for both of you.</Body>
       </Stack>
       <Stack gap={12}>
@@ -58,7 +58,7 @@ export default function Welcome() {
         />
         <Button label="Join with code" onPress={join} disabled={!isInviteCode(code)} />
       </Stack>
-      <Button label="Start a pact" variant="secondary" onPress={start} />
+      <Button label="Start a streak" variant="secondary" onPress={start} />
     </Screen>
   );
 }

@@ -15,7 +15,7 @@ import { useOnboarding } from '@/stores/onboarding';
 const UNAVAILABLE: Record<string, string> = {
   invalid: "This invite doesn't exist or was replaced. Ask for a fresh link.",
   expired: 'This invite expired. Ask your partner to send a new one.',
-  full: 'This pact is already full.',
+  full: 'This streak is already full.',
 };
 
 export default function JoinPact() {
@@ -64,7 +64,7 @@ export default function JoinPact() {
         <Stack gap={24}>
           <Avatar name={p.inviter_name ?? '?'} size={72} />
           <Stack gap={8}>
-            <Body muted>Join {p.inviter_name ?? 'your partner'}&apos;s pact</Body>
+            <Body muted>Join {p.inviter_name ?? 'your partner'}&apos;s streak</Body>
             <Title>{p.title}</Title>
             <Body muted>
               {p.proof_mode === 'photo' ? 'Prove it daily with a photo.' : 'Prove it daily with a tap.'} Miss a day
@@ -72,7 +72,7 @@ export default function JoinPact() {
             </Body>
           </Stack>
           {error && <Body muted>{error}</Body>}
-          <Button label={session ? 'Join pact' : 'Sign in to join'} onPress={join} loading={busy} />
+          <Button label={session ? 'Join streak' : 'Sign in to join'} onPress={join} loading={busy} />
         </Stack>
       )}
     </Screen>

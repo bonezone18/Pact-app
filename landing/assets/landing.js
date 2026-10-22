@@ -1,4 +1,4 @@
-// Invite landing page: https://pactapp.io/j/K7MQ2X
+// Invite landing page: https://lockstep.app/j/K7MQ2X
 // Shows who is inviting you to what, the code in large type, and store links.
 // Copies the code so the app can prefill it on first launch.
 (function () {
@@ -7,7 +7,7 @@
   var CODE_RE = /^[A-HJKMNP-Z2-9]{6}$/;
   var STATUS_COPY = {
     expired: 'This invite expired. Ask your partner to send a new one.',
-    full: 'This pact is already full.',
+    full: 'This streak is already full.',
     invalid: "This invite doesn't exist or was replaced. Ask for a fresh link.",
   };
 
@@ -26,7 +26,7 @@
     if (!navigator.clipboard || !navigator.clipboard.writeText) return Promise.resolve(false);
     return navigator.clipboard.writeText(code).then(
       function () {
-        el('copy-hint').textContent = 'Code copied. Pact will fill it in for you.';
+        el('copy-hint').textContent = 'Code copied. Lockstep will fill it in for you.';
         return true;
       },
       function () {
@@ -71,7 +71,7 @@
     }
 
     el('code').textContent = code.slice(0, 3) + '-' + code.slice(3);
-    el('open-app').href = 'pact://j/' + code;
+    el('open-app').href = 'lockstep://j/' + code;
 
     // Browsers that need a user gesture for the clipboard get one here: any
     // tap on the page's buttons copies the code before navigating.
@@ -87,14 +87,14 @@
         if (p.status !== 'valid' && STATUS_COPY[p.status]) showStatus(STATUS_COPY[p.status]);
         if (p.status === 'invalid') return;
         if (p.title) el('title').textContent = p.title;
-        if (p.inviter_name) el('invited-by').textContent = 'Join ' + p.inviter_name + "'s pact";
-        document.title = (p.inviter_name ? p.inviter_name + ' invited you · ' : '') + 'Pact';
+        if (p.inviter_name) el('invited-by').textContent = 'Join ' + p.inviter_name + "'s streak";
+        document.title = (p.inviter_name ? p.inviter_name + ' invited you · ' : '') + 'Lockstep';
       })
       .catch(function () {
         // Offline or misconfigured: the code and store links still work.
       });
   }
 
-  window.PactLanding = { codeFromPath: codeFromPath };
+  window.LockstepLanding = { codeFromPath: codeFromPath };
   init();
 })();

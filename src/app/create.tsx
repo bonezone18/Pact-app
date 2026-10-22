@@ -52,14 +52,14 @@ export default function CreatePact() {
 
   return (
     <Screen>
-      <Title>Start a pact</Title>
+      <Title>Start a streak</Title>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
         {TEMPLATES.map((t) => (
           <Chip key={t} label={t} selected={title === t} onPress={() => setTitle(t)} />
         ))}
       </View>
       <TextInput
-        accessibilityLabel="Pact title"
+        accessibilityLabel="Streak title"
         value={title}
         onChangeText={setTitle}
         maxLength={40}

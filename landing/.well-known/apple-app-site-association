@@ -2,7 +2,7 @@
   "applinks": {
     "details": [
       {
-        "appIDs": ["YOUR_TEAM_ID.io.pactapp.pact"],
+        "appIDs": ["YOUR_TEAM_ID.app.lockstep"],
         "components": [{ "/": "/j/*", "comment": "Invite links open the join screen" }]
       }
     ]

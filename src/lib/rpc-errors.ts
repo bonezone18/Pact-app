@@ -2,13 +2,13 @@
 const MESSAGES: Record<string, string> = {
   invalid_code: "That invite code doesn't exist or was replaced. Ask for a fresh link.",
   expired_code: 'That invite expired. Ask your partner to send a new one.',
-  pact_full: 'That pact is already full.',
-  already_member: "You're already in this pact.",
-  pro_required: 'This needs Pact Pro.',
-  not_member: "You're not a member of this pact.",
-  pact_inactive: "This pact isn't active.",
-  invalid_title: 'Give your pact a title of up to 40 characters.',
-  invalid_pod_size: 'Pacts have 2 to 4 members.',
+  pact_full: 'That streak is already full.',
+  already_member: "You're already in this streak.",
+  pro_required: 'This needs Lockstep Pro.',
+  not_member: "You're not part of this streak.",
+  pact_inactive: "This streak isn't active.",
+  invalid_title: 'Give your streak a title of up to 40 characters.',
+  invalid_pod_size: 'Streaks have 2 to 4 people.',
   not_authenticated: 'Please sign in again.',
 };
 

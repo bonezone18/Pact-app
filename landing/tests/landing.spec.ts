@@ -9,7 +9,7 @@ async function setup(page: Page, preview: object | 'network-error') {
       contentType: 'text/javascript',
       body: `window.PACT_CONFIG = {
         supabaseUrl: '${SUPABASE}', supabaseAnonKey: 'anon-key',
-        appStoreUrl: 'https://apps.apple.com/app/id123', playStoreUrl: 'https://play.google.com/store/apps/details?id=io.pactapp.pact'
+        appStoreUrl: 'https://apps.apple.com/app/id123', playStoreUrl: 'https://play.google.com/store/apps/details?id=app.lockstep'
       };`,
     }),
   );
@@ -38,7 +38,7 @@ test('shows the pact title, the inviter and the code in large type', async ({ pa
   const calls = await setup(page, VALID);
   await page.goto('/j/K7MQ2X');
 
-  await expect(page.locator('#invited-by')).toHaveText("Join Alice's pact");
+  await expect(page.locator('#invited-by')).toHaveText("Join Alice's streak");
   await expect(page.locator('#title')).toHaveText('Walk 1 mile');
   await expect(page.locator('#code')).toHaveText('K7M-Q2X');
   expect(calls).toEqual([{ body: { code: 'K7MQ2X' }, apikey: 'anon-key' }]);
@@ -55,8 +55,8 @@ test('store buttons link to the stores and copy the code on tap', async ({ page 
   await setup(page, VALID);
   await page.goto('/j/K7MQ2X');
   await expect(page.locator('#app-store')).toHaveAttribute('href', 'https://apps.apple.com/app/id123');
-  await expect(page.locator('#play-store')).toHaveAttribute('href', /id=io\.pactapp\.pact/);
-  await expect(page.locator('#open-app')).toHaveAttribute('href', 'pact://j/K7MQ2X');
+  await expect(page.locator('#play-store')).toHaveAttribute('href', /id=app\.lockstep/);
+  await expect(page.locator('#open-app')).toHaveAttribute('href', 'lockstep://j/K7MQ2X');
 
   await page.evaluate(() => navigator.clipboard.writeText('something else'));
   await page.route('https://apps.apple.com/**', (route) => route.fulfill({ body: 'store' }));
@@ -73,7 +73,7 @@ test('accepts the display form and lowercase in the link', async ({ page }) => {
 
 for (const [status, text] of [
   ['expired', 'This invite expired. Ask your partner to send a new one.'],
-  ['full', 'This pact is already full.'],
+  ['full', 'This streak is already full.'],
 ] as const) {
   test(`explains a ${status} invite`, async ({ page }) => {
     await setup(page, { ...VALID, status });
@@ -109,7 +109,7 @@ test('renders server text as text, never as HTML', async ({ page }) => {
   await setup(page, { ...VALID, title: '<img src=x onerror="window.pwned=1">', inviter_name: '<b>Eve</b>' });
   await page.goto('/j/K7MQ2X');
   await expect(page.locator('#title')).toHaveText('<img src=x onerror="window.pwned=1">');
-  await expect(page.locator('#invited-by')).toHaveText("Join <b>Eve</b>'s pact");
+  await expect(page.locator('#invited-by')).toHaveText("Join <b>Eve</b>'s streak");
   expect(await page.evaluate(() => (window as unknown as { pwned?: number }).pwned)).toBeUndefined();
 });
 
@@ -125,9 +125,9 @@ test('serves the app-link association files', async ({ request }) => {
   const aasa = await request.get('/.well-known/apple-app-site-association');
   expect(aasa.headers()['content-type']).toContain('application/json');
   const details = (await aasa.json()).applinks.details[0];
-  expect(details.appIDs[0]).toMatch(/\.io\.pactapp\.pact$/);
+  expect(details.appIDs[0]).toMatch(/\.app\.lockstep$/);
   expect(details.components).toContainEqual(expect.objectContaining({ '/': '/j/*' }));
 
   const assetlinks = await (await request.get('/.well-known/assetlinks.json')).json();
-  expect(assetlinks[0].target.package_name).toBe('io.pactapp.pact');
+  expect(assetlinks[0].target.package_name).toBe('app.lockstep');
 });

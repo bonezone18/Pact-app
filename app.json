@@ -1,21 +1,21 @@
 {
   "expo": {
-    "name": "Pact",
-    "slug": "pact",
+    "name": "Lockstep",
+    "slug": "lockstep",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "pact",
+    "scheme": "lockstep",
     "userInterfaceStyle": "dark",
     "ios": {
       "icon": "./assets/expo.icon",
-      "bundleIdentifier": "io.pactapp.pact",
+      "bundleIdentifier": "app.lockstep",
       "usesAppleSignIn": true,
       "infoPlist": {
-        "NSCameraUsageDescription": "Pact uses the camera to capture your daily proof photo."
+        "NSCameraUsageDescription": "Lockstep uses the camera to capture your daily proof photo."
       },
       "associatedDomains": [
-        "applinks:pactapp.io"
+        "applinks:lockstep.app"
       ]
     },
     "android": {
@@ -26,7 +26,7 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "io.pactapp.pact",
+      "package": "app.lockstep",
       "permissions": [
         "android.permission.CAMERA"
       ],
@@ -37,7 +37,7 @@
           "data": [
             {
               "scheme": "https",
-              "host": "pactapp.io",
+              "host": "lockstep.app",
               "pathPrefix": "/j/"
             }
           ],
@@ -68,7 +68,7 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Pact uses the camera to capture your daily proof photo.",
+          "cameraPermission": "Lockstep uses the camera to capture your daily proof photo.",
           "recordAudioAndroid": false
         }
       ],

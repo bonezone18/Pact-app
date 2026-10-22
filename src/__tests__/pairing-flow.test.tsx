@@ -72,7 +72,7 @@ describe('first launch', () => {
 
   it('prefills the invite code from the clipboard when it matches the format', async () => {
     jest.mocked(Clipboard.hasStringAsync).mockResolvedValue(true);
-    jest.mocked(Clipboard.getStringAsync).mockResolvedValue('https://pactapp.io/j/K7MQ2X');
+    jest.mocked(Clipboard.getStringAsync).mockResolvedValue('https://lockstep.app/j/K7MQ2X');
     const app = await renderRouter(APP, { initialUrl: '/welcome' });
 
     await waitFor(() => expect(screen.getByLabelText('Invite code').props.value).toBe('K7M-Q2X'));
@@ -99,7 +99,7 @@ describe('invitee path', () => {
     const app = await renderRouter(APP, { initialUrl: '/j/K7MQ2X' });
 
     await waitFor(() => expect(app.getPathname()).toBe('/join/K7MQ2X'));
-    await waitFor(() => expect(screen.getByText("Join Alice's pact")).toBeTruthy());
+    await waitFor(() => expect(screen.getByText("Join Alice's streak")).toBeTruthy());
     expect(screen.getByText('Walk 1 mile')).toBeTruthy();
     expect(client.rpc).toHaveBeenCalledWith('invite_preview', { code: 'K7MQ2X' });
 
@@ -109,7 +109,7 @@ describe('invitee path', () => {
     await fireEvent.press(screen.getByRole('button', { name: 'Continue with Google' }));
     await waitFor(() => expect(app.getPathname()).toBe('/join/K7MQ2X'));
 
-    await fireEvent.press(await screen.findByRole('button', { name: 'Join pact' }));
+    await fireEvent.press(await screen.findByRole('button', { name: 'Join streak' }));
     await waitFor(() => expect(app.getPathname()).toBe('/'));
     expect(client.rpc).toHaveBeenCalledWith('join_pact', { code: 'K7MQ2X' });
     expect(useOnboarding.getState().intent).toBeNull();
@@ -117,7 +117,7 @@ describe('invitee path', () => {
 
   it.each([
     ['expired', 'This invite expired. Ask your partner to send a new one.'],
-    ['full', 'This pact is already full.'],
+    ['full', 'This streak is already full.'],
     ['invalid', "This invite doesn't exist or was replaced. Ask for a fresh link."],
   ])('explains a %s invite instead of offering to join', async (status, message) => {
     rpcReturns({ invite_preview: { data: { ...VALID_PREVIEW, status } } });
@@ -131,7 +131,7 @@ describe('invitee path', () => {
     rpcReturns({ invite_preview: { data: VALID_PREVIEW }, join_pact: { error: { message: 'pro_required' } } });
     const app = await renderRouter(APP, { initialUrl: '/join/K7MQ2X' });
 
-    await fireEvent.press(await screen.findByRole('button', { name: 'Join pact' }));
+    await fireEvent.press(await screen.findByRole('button', { name: 'Join streak' }));
     await waitFor(() => expect(app.getPathname()).toBe('/paywall'));
   });
 
@@ -140,8 +140,8 @@ describe('invitee path', () => {
     rpcReturns({ invite_preview: { data: VALID_PREVIEW }, join_pact: { error: { message: 'pact_full' } } });
     await renderRouter(APP, { initialUrl: '/join/K7MQ2X' });
 
-    await fireEvent.press(await screen.findByRole('button', { name: 'Join pact' }));
-    expect(await screen.findByText('That pact is already full.')).toBeTruthy();
+    await fireEvent.press(await screen.findByRole('button', { name: 'Join streak' }));
+    expect(await screen.findByText('That streak is already full.')).toBeTruthy();
   });
 });
 
@@ -150,7 +150,7 @@ describe('creator path', () => {
     rpcReturns({ create_pact: { data: { pact_id: 'p1', code: 'K7MQ2X', expires_at: FUTURE } } });
     const app = await renderRouter(APP, { initialUrl: '/welcome' });
 
-    await fireEvent.press(await screen.findByRole('button', { name: 'Start a pact' }));
+    await fireEvent.press(await screen.findByRole('button', { name: 'Start a streak' }));
     await waitFor(() => expect(app.getPathname()).toBe('/sign-in'));
     await fireEvent.press(screen.getByRole('button', { name: 'Continue with Google' }));
     await waitFor(() => expect(app.getPathname()).toBe('/create'));
@@ -165,7 +165,7 @@ describe('creator path', () => {
     await waitFor(() => expect(app.getPathname()).toBe('/invite/p1'));
     expect(client.rpc).toHaveBeenCalledWith('create_pact', { title: 'Walk 1 mile', proof_mode: 'tap', max_members: 2 });
     expect(shareSpy).toHaveBeenCalledTimes(1);
-    expect(shareSpy.mock.calls[0][0].message).toContain('https://pactapp.io/j/K7MQ2X');
+    expect(shareSpy.mock.calls[0][0].message).toContain('https://lockstep.app/j/K7MQ2X');
     expect(await screen.findByText('K7M-Q2X')).toBeTruthy();
 
     // Partner joins: realtime flips the pact to active.
@@ -179,7 +179,7 @@ describe('creator path', () => {
     rpcReturns({ create_pact: { error: { message: 'pro_required' } } });
     const app = await renderRouter(APP, { initialUrl: '/create' });
 
-    await fireEvent.changeText(await screen.findByLabelText('Pact title'), 'Gym');
+    await fireEvent.changeText(await screen.findByLabelText('Streak title'), 'Gym');
     await fireEvent.press(screen.getByRole('button', { name: 'Create and invite' }));
     await waitFor(() => expect(app.getPathname()).toBe('/paywall'));
     expect(shareSpy).not.toHaveBeenCalled();
@@ -189,7 +189,7 @@ describe('creator path', () => {
     controls.signIn();
     controls.setTable('entitlements', { is_pro: false, expires_at: null });
     await renderRouter(APP, { initialUrl: '/create' });
-    await screen.findByLabelText('Pact title');
+    await screen.findByLabelText('Streak title');
     expect(screen.queryByText('Members')).toBeNull();
   });
 
@@ -200,7 +200,7 @@ describe('creator path', () => {
     const app = await renderRouter(APP, { initialUrl: '/create' });
 
     await fireEvent.press(await screen.findByRole('button', { name: '3' }));
-    await fireEvent.changeText(screen.getByLabelText('Pact title'), 'Gym');
+    await fireEvent.changeText(screen.getByLabelText('Streak title'), 'Gym');
     await fireEvent.press(screen.getByRole('button', { name: 'Create and invite' }));
     await waitFor(() => expect(app.getPathname()).toBe('/invite/p2'));
     expect(client.rpc).toHaveBeenCalledWith('create_pact', { title: 'Gym', proof_mode: 'photo', max_members: 3 });

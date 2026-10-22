@@ -2,7 +2,7 @@
 # https://supabase.com/docs/guides/local-development/cli/config
 # A string used to distinguish different Supabase projects on the same host. Defaults to the
 # working directory name when running `supabase init`.
-project_id = "pact"
+project_id = "lockstep"
 
 [api]
 enabled = true
@@ -322,9 +322,9 @@ max_frequency = "5s"
 # `twitter`, `x`, `slack`, `spotify`, `workos`, `zoom`.
 [auth.external.apple]
 # Native Sign in with Apple (ID token). client_id is the iOS bundle ID; the
-# secret is only needed for web OAuth, which Pact doesn't use.
+# secret is only needed for web OAuth, which Lockstep doesn't use.
 enabled = true
-client_id = "io.pactapp.pact"
+client_id = "app.lockstep"
 secret = "env(SUPABASE_AUTH_EXTERNAL_APPLE_SECRET)"
 redirect_uri = ""
 url = ""

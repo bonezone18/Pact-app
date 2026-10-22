@@ -4,7 +4,7 @@
 export const INVITE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 const CODE_RE = /^[A-HJKMNP-Z2-9]{6}$/;
 
-export const LINK_HOST = process.env.EXPO_PUBLIC_LINK_HOST ?? 'pactapp.io';
+export const LINK_HOST = process.env.EXPO_PUBLIC_LINK_HOST ?? 'lockstep.app';
 
 /** Uppercases and strips spaces/hyphens. Does not validate. */
 export function normalizeInviteCode(input: string): string {
@@ -37,12 +37,12 @@ export function extractInviteCode(text: string | null | undefined): string | nul
 }
 
 export function inviteShareMessage(code: string, title: string): string {
-  return `Join my pact on Pact: "${title}". One check-in a day, one shared streak. Code ${formatInviteCode(code)}\n${inviteUrl(code)}`;
+  return `Start a streak with me on Lockstep: "${title}". We both check in every day; miss one and it resets for both of us. Code ${formatInviteCode(code)}\n${inviteUrl(code)}`;
 }
 
 /**
- * The invite code in an incoming link: https://pactapp.io/j/K7MQ2X,
- * pact://j/K7MQ2X or a bare /j/K7MQ2X path. Null for anything else.
+ * The invite code in an incoming link: https://lockstep.app/j/K7MQ2X,
+ * lockstep://j/K7MQ2X or a bare /j/K7MQ2X path. Null for anything else.
  */
 export function inviteCodeFromUrl(url: string): string | null {
   const m = url.match(/\/j\/([^/?#]+)/);

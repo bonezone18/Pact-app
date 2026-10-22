@@ -4,8 +4,8 @@ import { routeForIntent, useOnboarding } from '@/stores/onboarding';
 
 describe('universal links', () => {
   it.each([
-    ['https://pactapp.io/j/K7MQ2X', '/join/K7MQ2X'],
-    ['pact://j/k7m-q2x', '/join/K7MQ2X'],
+    ['https://lockstep.app/j/K7MQ2X', '/join/K7MQ2X'],
+    ['lockstep://j/k7m-q2x', '/join/K7MQ2X'],
     ['/j/K7MQ2X', '/join/K7MQ2X'],
   ])('%s opens the join screen', (path, expected) => {
     expect(redirectSystemPath({ path, initial: true })).toBe(expected);
@@ -13,7 +13,7 @@ describe('universal links', () => {
 
   it('leaves other paths alone', () => {
     expect(redirectSystemPath({ path: '/create', initial: false })).toBe('/create');
-    expect(redirectSystemPath({ path: 'https://pactapp.io/j/BAD', initial: true })).toBe('https://pactapp.io/j/BAD');
+    expect(redirectSystemPath({ path: 'https://lockstep.app/j/BAD', initial: true })).toBe('https://lockstep.app/j/BAD');
   });
 });
 

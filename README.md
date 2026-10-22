@@ -1,6 +1,8 @@
-# Pact
+# Lockstep
 
 A habit lockbox for two people (or a small pod on Pro): commit to one daily challenge, prove it each day, share one streak.
+
+Users see "Lockstep" and "streak". The code and database still call a shared streak a **pact** (`pacts`, `create_pact`, `/pact/[pactId]`); that word never reaches the screen.
 
 Built server-first: Postgres functions and RLS on Supabase define the game; the Expo app is a thin client.
 
@@ -21,7 +23,7 @@ Built server-first: Postgres functions and RLS on Supabase define the game; the 
 src/app/          Expo Router screens
 src/lib/          Supabase client, auth, invite codes, queries
 src/__tests__/    Jest unit and screen-flow tests (real routes, fake Supabase)
-landing/          Static invite landing page (pactapp.io/j/<code>) + app-link files
+landing/          Static invite landing page (lockstep.app/j/<code>) + app-link files
 supabase/
   config.toml     Local Supabase config
   migrations/     Schema, RLS, storage policies, sign-up trigger, RPCs, engine
@@ -56,12 +58,12 @@ The dashboard reads `pact_today`, which works out on the server each member's st
 
 ## Sign-in setup
 
-- **Apple**: enable Sign in with Apple for `io.pactapp.pact` in the Apple developer account. Supabase verifies the native ID token against the bundle ID (`supabase/config.toml`).
+- **Apple**: enable Sign in with Apple for `app.lockstep` in the Apple developer account. Supabase verifies the native ID token against the bundle ID (`supabase/config.toml`).
 - **Google**: create web, iOS and Android OAuth clients. Set `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` / `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`, `GOOGLE_IOS_URL_SCHEME` (build time; `app.config.ts` only adds the Google plugin when it is set), and `SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_IDS` (comma-separated, web first) for Supabase.
 
 ## Invite links
 
-`https://pactapp.io/j/<code>` opens the join screen when the app is installed (`+native-intent.tsx`); otherwise the static page in `landing/` shows the pact, copies the code and links to the stores. Before deploying it, fill in `landing/config.js`, and the team ID / signing-cert fingerprint in `landing/.well-known/`. `_redirects` (Netlify, Cloudflare Pages) and `vercel.json` carry the `/j/*` rewrite.
+`https://lockstep.app/j/<code>` opens the join screen when the app is installed (`+native-intent.tsx`); otherwise the static page in `landing/` shows the streak, copies the code and links to the stores. Before deploying it, fill in `landing/config.js`, and the team ID / signing-cert fingerprint in `landing/.well-known/`. `_redirects` (Netlify, Cloudflare Pages) and `vercel.json` carry the `/j/*` rewrite.
 
 ```bash
 npm run landing:serve    # http://localhost:4173/j/K7MQ2X
