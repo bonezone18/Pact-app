@@ -13,11 +13,14 @@
       "usesAppleSignIn": true,
       "infoPlist": {
         "NSCameraUsageDescription": "Pact uses the camera to capture your daily proof photo."
-      }
+      },
+      "associatedDomains": [
+        "applinks:pactapp.io"
+      ]
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#121212",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -26,10 +29,27 @@
       "package": "io.pactapp.pact",
       "permissions": [
         "android.permission.CAMERA"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "pactapp.io",
+              "pathPrefix": "/j/"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
       ]
     },
     "web": {
-      "output": "server",
+      "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
@@ -37,7 +57,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#121212",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
@@ -52,7 +72,8 @@
           "recordAudioAndroid": false
         }
       ],
-      "expo-notifications"
+      "expo-notifications",
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true,

@@ -1,5 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
-import * as SecureStore from 'expo-secure-store';
+import { createClient, processLock } from '@supabase/supabase-js';
+import { AppState } from 'react-native';
+
+import { chunkedSecureStorage } from '@/lib/secure-storage';
 
 const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const anonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
@@ -11,17 +13,21 @@ if (!url || !anonKey) {
 }
 
 // Sessions persist in the OS keychain / keystore rather than plain storage.
-const secureStorage = {
-  getItem: (key: string) => SecureStore.getItemAsync(key),
-  setItem: (key: string, value: string) => SecureStore.setItemAsync(key, value),
-  removeItem: (key: string) => SecureStore.deleteItemAsync(key),
-};
-
 export const supabase = createClient(url, anonKey, {
   auth: {
-    storage: secureStorage,
+    storage: chunkedSecureStorage,
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,
+    lock: processLock,
   },
+});
+
+// Refresh tokens only while the app is in the foreground.
+AppState.addEventListener('change', (state) => {
+  if (state === 'active') {
+    supabase.auth.startAutoRefresh();
+  } else {
+    supabase.auth.stopAutoRefresh();
+  }
 });

@@ -1,0 +1,85 @@
+// A tiny stand-in for the Supabase client used by the screen tests: auth with
+// a controllable session, rpc() as a jest mock, table reads from fixtures and
+// realtime channels whose callbacks the test can fire.
+
+type Result = { data: unknown; error: { message: string } | null };
+type Listener = (event: string, session: unknown) => void;
+type ChannelHandler = (payload: { new: Record<string, unknown> }) => void;
+
+export function createFakeSupabase() {
+  let session: unknown = null;
+  const listeners = new Set<Listener>();
+  const tables: Record<string, Result> = {};
+  const channelHandlers: { filter: unknown; handler: ChannelHandler }[] = [];
+
+  const query = (table: string) => {
+    const result = () => Promise.resolve(tables[table] ?? { data: [], error: null });
+    const builder: Record<string, unknown> = {};
+    for (const m of ['select', 'eq', 'neq', 'is', 'order', 'limit', 'update', 'in']) {
+      builder[m] = () => builder;
+    }
+    builder.single = result;
+    builder.maybeSingle = result;
+    builder.then = (resolve: (r: Result) => unknown, reject: (e: unknown) => unknown) =>
+      result().then(resolve, reject);
+    return builder;
+  };
+
+  const client = {
+    auth: {
+      getSession: jest.fn(async () => ({ data: { session } })),
+      onAuthStateChange: jest.fn((listener: Listener) => {
+        listeners.add(listener);
+        return { data: { subscription: { unsubscribe: () => listeners.delete(listener) } } };
+      }),
+      signOut: jest.fn(async () => controls.setSession(null)),
+      startAutoRefresh: jest.fn(),
+      stopAutoRefresh: jest.fn(),
+    },
+    rpc: jest.fn(async (_fn: string, _args?: unknown): Promise<Result> => ({ data: null, error: null })),
+    from: jest.fn(query),
+    channel: jest.fn(() => {
+      const channel = {
+        on: (_type: string, filter: unknown, handler: ChannelHandler) => {
+          channelHandlers.push({ filter, handler });
+          return channel;
+        },
+        subscribe: () => channel,
+      };
+      return channel;
+    }),
+    removeChannel: jest.fn(),
+  };
+
+  const controls = {
+    setSession(next: unknown) {
+      session = next;
+      listeners.forEach((l) => l(next ? 'SIGNED_IN' : 'SIGNED_OUT', next));
+    },
+    signIn(userId = 'user-1') {
+      controls.setSession({ user: { id: userId }, access_token: 'token' });
+    },
+    setTable(table: string, data: unknown, error: Result['error'] = null) {
+      tables[table] = { data, error };
+    },
+    /** Fire every realtime handler registered for this table. */
+    emit(table: string, row: Record<string, unknown>) {
+      channelHandlers
+        .filter((c) => (c.filter as { table?: string }).table === table)
+        .forEach((c) => c.handler({ new: row }));
+    },
+    reset() {
+      session = null;
+      listeners.clear();
+      channelHandlers.length = 0;
+      for (const k of Object.keys(tables)) delete tables[k];
+      client.rpc.mockReset();
+      client.rpc.mockImplementation(async () => ({ data: null, error: null }));
+    },
+  };
+
+  return { client, controls };
+}
+
+/** Shared instance for jest.mock('@/lib/supabase', ...). */
+export const fake = createFakeSupabase();

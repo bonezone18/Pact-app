@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pact</title>
+    <link rel="stylesheet" href="/assets/style.css" />
+  </head>
+  <body>
+    <main>
+      <div class="brand">PACT</div>
+      <h1>One daily challenge. One shared streak.</h1>
+      <p>Pact is a habit lockbox for two. Miss a day and the streak resets for both of you.</p>
+      <div class="buttons">
+        <a id="app-store" class="button primary" href="#">Download on the App Store</a>
+        <a id="play-store" class="button" href="#">Get it on Google Play</a>
+      </div>
+    </main>
+    <script src="/config.js"></script>
+    <script>
+      document.getElementById('app-store').href = (window.PACT_CONFIG || {}).appStoreUrl || '#';
+      document.getElementById('play-store').href = (window.PACT_CONFIG || {}).playStoreUrl || '#';
+    </script>
+  </body>
+</html>

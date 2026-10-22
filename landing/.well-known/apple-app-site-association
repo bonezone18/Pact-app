@@ -1,0 +1,10 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["YOUR_TEAM_ID.io.pactapp.pact"],
+        "components": [{ "/": "/j/*", "comment": "Invite links open the join screen" }]
+      }
+    ]
+  }
+}

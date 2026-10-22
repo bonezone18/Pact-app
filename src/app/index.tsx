@@ -1,98 +1,76 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Link, Redirect, router } from 'expo-router';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { Body, Button, Screen, Stack, Title } from '@/components/ui';
+import { colors, radius, space } from '@/constants/theme';
+import { signOut } from '@/lib/auth';
+import { type PactSummary, useMyPacts } from '@/lib/queries';
+import { useAuth } from '@/providers/auth-provider';
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
+// Phase 4 home: the pacts you're in and the way back to a waiting room.
+// The full daily dashboard replaces this in Phase 5.
+export default function Home() {
+  const { session } = useAuth();
+  const pacts = useMyPacts(!!session);
+
+  if (!session) return <Redirect href="/welcome" />;
+
+  return (
+    <Screen>
+      {pacts.isPending && <ActivityIndicator color={colors.text} />}
+      {pacts.data?.length === 0 && (
+        <Stack>
+          <Title>No pact yet</Title>
+          <Body muted>Start one and invite someone, or join with their code.</Body>
+          <Button label="Start a pact" onPress={() => router.push('/create')} />
+          <Button label="I have a code" variant="secondary" onPress={() => router.push('/welcome')} />
+        </Stack>
+      )}
+      {pacts.data?.map((p) => <PactCard key={p.id} pact={p} />)}
+      <View style={{ flex: 1 }} />
+      <Pressable accessibilityRole="button" onPress={() => signOut()}>
+        <Body muted style={{ textAlign: 'center' }}>
+          Sign out
+        </Body>
+      </Pressable>
+    </Screen>
+  );
+}
+
+function PactCard({ pact }: { pact: PactSummary }) {
+  const names = pact.pact_members
+    .filter((m) => !m.left_at)
+    .map((m) => m.profiles?.display_name ?? '?')
+    .join(' · ');
+
+  if (pact.status === 'pending') {
     return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
+      <Link href={`/invite/${pact.id}`} asChild>
+        <Pressable style={{ backgroundColor: colors.surface, borderRadius: radius.lg, padding: space.lg }}>
+          <Body>{pact.title}</Body>
+          <Body muted>Waiting for your partner. Tap to share the invite again.</Body>
+        </Pressable>
+      </Link>
     );
   }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+
+  const live = pact.current_streak > 0;
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
+    <View style={{ backgroundColor: colors.surface, borderRadius: radius.lg, padding: space.lg, gap: space.sm }}>
+      <Text
+        style={{
+          color: live ? colors.accent : colors.broken,
+          fontSize: 96,
+          fontWeight: '800',
+          fontVariant: ['tabular-nums'],
+        }}>
+        {pact.current_streak}
+      </Text>
+      <Body style={{ color: live ? colors.accent : colors.broken, fontWeight: '700' }}>
+        {live ? 'DAYS' : 'DAYS — Day 1 starts now'}
+      </Body>
+      <Body>{pact.title}</Body>
+      <Body muted>{names}</Body>
+    </View>
   );
 }
-
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
-});

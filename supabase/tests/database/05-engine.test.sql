@@ -199,7 +199,10 @@ select results_eq($$select * from pg_temp.events(tests.pact('Half hour'))$$,
                   'UTC+5:30 day closes at 18:45 UTC (00:15 IST)');
 
 -- Timezone change applies only at the next local midnight; one change per 24 h.
+-- (Only users in an active pact wait for midnight; see 09-pairing.)
 select tests.create_user('Trav');
+select tests.create_user('TravMate');
+select tests.pair('Trav', 'TravMate', 'Trip', '2026-10-21 08:00Z');
 select tests.login('Trav');
 select is((private.set_timezone('Asia/Tokyo', '2026-10-22 10:00Z') ->> 'applies_at')::timestamptz,
           '2026-10-23 00:00Z'::timestamptz, 'change is scheduled for the next local midnight in the old zone');

@@ -4,13 +4,16 @@
   "main": "expo-router/entry",
   "dependencies": {
     "@expo/ui": "~58.0.22",
+    "@react-native-google-signin/google-signin": "^16.1.5",
     "@sentry/react-native": "~8.28.0",
     "@supabase/supabase-js": "^2.118.0",
     "@tanstack/react-query": "^5.104.5",
     "expo": "~58.0.17",
     "expo-apple-authentication": "~58.0.2",
     "expo-camera": "~58.0.12",
+    "expo-clipboard": "~58.0.4",
     "expo-constants": "~58.0.13",
+    "expo-crypto": "~58.0.7",
     "expo-dev-client": "~58.0.14",
     "expo-device": "~58.0.5",
     "expo-font": "~58.0.9",
@@ -18,6 +21,7 @@
     "expo-image": "~58.0.16",
     "expo-image-manipulator": "~58.0.15",
     "expo-linking": "~58.0.14",
+    "expo-localization": "~58.0.5",
     "expo-notifications": "~58.1.6",
     "expo-router": "~58.0.25",
     "expo-secure-store": "~58.0.2",
@@ -43,15 +47,19 @@
     "zustand": "^5.0.16"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@testing-library/react-native": "^14.1.0",
+    "@types/jest": "^30.0.0",
     "@types/react": "~19.3.0",
     "eslint": "^9.0.0",
     "eslint-config-expo": "~58.0.4",
+    "jest": "^30.5.2",
+    "jest-expo": "^58.0.12",
     "supabase": "^2.121.0",
     "typescript": "~6.0.3"
   },
   "scripts": {
     "start": "expo start",
-    "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
@@ -60,7 +68,20 @@
     "db:start": "supabase start",
     "db:reset": "supabase db reset",
     "db:test": "supabase test db",
-    "db:test:local": "./scripts/test-db.sh"
+    "db:test:local": "./scripts/test-db.sh",
+    "test": "jest",
+    "test:landing": "playwright test -c landing/playwright.config.ts",
+    "landing:serve": "node landing/serve.mjs"
   },
-  "private": true
+  "private": true,
+  "jest": {
+    "preset": "jest-expo",
+    "setupFiles": [
+      "<rootDir>/jest.setup.ts"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/landing/"
+    ]
+  }
 }
