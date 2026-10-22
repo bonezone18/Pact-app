@@ -47,10 +47,18 @@ PSQL=(psql -X -q -v ON_ERROR_STOP=1)
 
 "${PSQL[@]}" -f "$ROOT/scripts/supabase-shim.sql"
 "${PSQL[@]}" -c "create extension pgtap with schema extensions"
+# Lets 08-engine-concurrency open parallel sessions back into this database.
+"${PSQL[@]}" -c "alter database postgres set pact.test_dsn = 'host=$WORK port=$PORT dbname=postgres user=postgres'"
 for m in "$ROOT"/supabase/migrations/*.sql; do
   echo "migrate: $(basename "$m")"
   "${PSQL[@]}" -f "$m"
 done
 
-# pgTAP lives in `extensions`, as on Supabase.
-PGOPTIONS="-c search_path=public,extensions" pg_prove --ext .sql "$@" "$ROOT"/supabase/tests/database
+# pgTAP lives in `extensions`, as on Supabase. Pass test files to run a
+# subset (00-helpers.test.sql must come first); pg_prove flags pass through.
+TESTS=()
+for a in "$@"; do [[ "$a" == *.sql ]] && TESTS+=("$a"); done
+if [[ ${#TESTS[@]} -eq 0 ]]; then
+  set -- "$@" "$ROOT"/supabase/tests/database
+fi
+PGOPTIONS="-c search_path=public,extensions" pg_prove --ext .sql "$@"
