@@ -6,6 +6,7 @@ import { Share, TextInput, View } from 'react-native';
 import { Body, Button, Chip, Screen, Stack, styles, Title } from '@/components/ui';
 import { colors } from '@/constants/theme';
 import { inviteShareMessage } from '@/lib/invite-code';
+import { registerForPush } from '@/lib/push';
 import { keys, type ProofMode, useIsPro } from '@/lib/queries';
 import { toRpcError } from '@/lib/rpc-errors';
 import { supabase } from '@/lib/supabase';
@@ -48,6 +49,8 @@ export default function CreatePact() {
     // Straight to the waiting room with the share sheet on top: no screen in between.
     router.replace(`/invite/${pact_id}`);
     await Share.share({ message: inviteShareMessage(code, title.trim()) }).catch(() => undefined);
+    // After the share sheet: so they hear the moment their partner joins.
+    registerForPush({ prompt: true }).catch(() => undefined);
   };
 
   return (

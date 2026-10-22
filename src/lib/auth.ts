@@ -2,6 +2,7 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Crypto from 'expo-crypto';
 import { GoogleSignin, isErrorWithCode, statusCodes } from '@react-native-google-signin/google-signin';
 
+import { unregisterPush } from '@/lib/push';
 import { supabase } from '@/lib/supabase';
 
 export class SignInCancelled extends Error {
@@ -77,6 +78,7 @@ export async function signInWithGoogle(): Promise<void> {
 }
 
 export async function signOut(): Promise<void> {
+  await unregisterPush().catch(() => undefined);
   await supabase.auth.signOut();
   if (googleConfigured) await GoogleSignin.signOut().catch(() => undefined);
 }

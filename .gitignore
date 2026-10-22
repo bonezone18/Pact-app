@@ -47,3 +47,7 @@ test-results/
 playwright-report/
 landing/test-results/
 landing/playwright-report/
+
+# Firebase (Android push) - supplied at build time
+google-services.json
+GoogleService-Info.plist

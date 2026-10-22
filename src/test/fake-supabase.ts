@@ -15,7 +15,7 @@ export function createFakeSupabase() {
   const query = (table: string) => {
     const result = () => Promise.resolve(tables[table] ?? { data: [], error: null });
     const builder: Record<string, unknown> = {};
-    for (const m of ['select', 'eq', 'neq', 'is', 'order', 'limit', 'update', 'in']) {
+    for (const m of ['select', 'eq', 'neq', 'is', 'order', 'limit', 'update', 'delete', 'in']) {
       builder[m] = () => builder;
     }
     builder.single = result;

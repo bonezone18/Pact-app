@@ -6,6 +6,7 @@ import { ActivityIndicator } from 'react-native';
 import { Avatar, Body, Button, Screen, Stack, Title } from '@/components/ui';
 import { colors } from '@/constants/theme';
 import { formatInviteCode, normalizeInviteCode } from '@/lib/invite-code';
+import { registerForPush } from '@/lib/push';
 import { keys, useInvitePreview } from '@/lib/queries';
 import { toRpcError } from '@/lib/rpc-errors';
 import { supabase } from '@/lib/supabase';
@@ -46,6 +47,7 @@ export default function JoinPact() {
     setIntent(null);
     queryClient.invalidateQueries({ queryKey: keys.pacts });
     router.replace('/');
+    registerForPush({ prompt: true }).catch(() => undefined);
   };
 
   const p = preview.data;

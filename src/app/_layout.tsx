@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 
 import { colors } from '@/constants/theme';
 import { useCheckInSync } from '@/lib/check-in-sync';
+import { usePushNotifications } from '@/lib/push';
 import { queryClient } from '@/lib/query-client';
 import { AuthProvider, useAuth } from '@/providers/auth-provider';
 
@@ -24,6 +25,7 @@ export default function RootLayout() {
 function RootStack() {
   const { ready, session } = useAuth();
   useCheckInSync(!!session);
+  usePushNotifications(!!session);
 
   // Keep the splash up until we know whether there is a session.
   useEffect(() => {
