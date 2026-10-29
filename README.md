@@ -35,14 +35,29 @@ scripts/
   supabase-shim.sql  Minimal auth/storage stand-in used by test-db.sh
 ```
 
-## Setup
+## Run it locally
+
+The app uses native modules, so it needs a development build: Expo Go won't work.
 
 ```bash
 npm install
-cp .env.example .env.local        # fill in from `npx supabase status`
-npm run db:start                  # supabase start (needs Docker)
-npx expo run:ios                  # or run:android; native modules need a dev build, not Expo Go
+npm run db:start                  # local Supabase in Docker; prints its URL and keys
+cp .env.example .env.local        # set EXPO_PUBLIC_SUPABASE_URL / _ANON_KEY (see below)
+npm run android                   # builds the dev app and opens it on a running emulator
+# or: npm run ios                 # macOS + Xcode, opens the iOS Simulator
 ```
+
+`EXPO_PUBLIC_SUPABASE_URL` depends on where the app runs: `http://10.0.2.2:54321` on the Android emulator, `http://127.0.0.1:54321` on the iOS Simulator, or `http://<your computer's Wi-Fi IP>:54321` on a phone on the same network. The key is the anon/publishable key that `npx supabase status` prints.
+
+With `EXPO_PUBLIC_DEV_SIGN_IN=true`, development builds show an email + password sign-in (accounts are created on first use), so you can test before Apple/Google are set up. Store builds never show it. Note for hosted projects: the email provider must have "Confirm email" off for this, and should be disabled entirely before launch.
+
+Days close on the real clock (each member's midnight + 15 minutes). To see a streak tick without waiting, run in Supabase Studio's SQL editor (http://127.0.0.1:54323):
+
+```sql
+select public.evaluate_due_pacts(now() + interval '1 day');  -- closes today as if it were tomorrow
+```
+
+Release builds (`preview`, `production`) skip Sentry source-map upload until Sentry is configured.
 
 EAS still has to be linked to an Expo account once:
 

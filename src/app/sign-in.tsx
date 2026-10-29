@@ -1,11 +1,12 @@
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { Redirect, router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Platform } from 'react-native';
+import { Platform, TextInput } from 'react-native';
 
-import { Body, Button, Screen, Stack, Title } from '@/components/ui';
-import { radius } from '@/constants/theme';
+import { Body, Button, Screen, Stack, styles, Title } from '@/components/ui';
+import { colors, radius } from '@/constants/theme';
 import { SignInCancelled, signInWithApple, signInWithGoogle } from '@/lib/auth';
+import { devSignIn, devSignInEnabled } from '@/lib/dev-auth';
 import { useAuth } from '@/providers/auth-provider';
 import { routeForIntent, useOnboarding } from '@/stores/onboarding';
 
@@ -22,14 +23,16 @@ export default function SignIn() {
 
   if (session) return <Redirect href={routeForIntent(intent)} />;
 
-  const run = async (signIn: () => Promise<void>) => {
+  const run = async (signIn: () => Promise<void>, describe = false) => {
     setBusy(true);
     setError(null);
     try {
       await signIn();
       router.replace(routeForIntent(intent));
     } catch (e) {
-      if (!(e instanceof SignInCancelled)) setError("Couldn't sign you in. Please try again.");
+      if (!(e instanceof SignInCancelled)) {
+        setError(describe && e instanceof Error ? e.message : "Couldn't sign you in. Please try again.");
+      }
     } finally {
       setBusy(false);
     }
@@ -54,6 +57,43 @@ export default function SignIn() {
         <Button label="Continue with Google" variant="secondary" loading={busy} onPress={() => run(signInWithGoogle)} />
         {error && <Body muted>{error}</Body>}
       </Stack>
+      {devSignInEnabled() && <DevSignIn busy={busy} onSubmit={(email, pw) => run(() => devSignIn(email, pw), true)} />}
     </Screen>
+  );
+}
+
+function DevSignIn({ busy, onSubmit }: { busy: boolean; onSubmit: (email: string, password: string) => void }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  return (
+    <Stack gap={8}>
+      <Body muted>Developer sign-in (local testing only)</Body>
+      <TextInput
+        accessibilityLabel="Email"
+        value={email}
+        onChangeText={setEmail}
+        autoCapitalize="none"
+        keyboardType="email-address"
+        placeholder="alice@test.dev"
+        placeholderTextColor={colors.textSecondary}
+        style={[styles.input, { fontSize: 17 }]}
+      />
+      <TextInput
+        accessibilityLabel="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+        placeholder="At least 6 characters"
+        placeholderTextColor={colors.textSecondary}
+        style={[styles.input, { fontSize: 17 }]}
+      />
+      <Button
+        label="Sign in with email"
+        variant="secondary"
+        loading={busy}
+        disabled={!email.includes('@') || password.length < 6}
+        onPress={() => onSubmit(email.trim(), password)}
+      />
+    </Stack>
   );
 }

@@ -1,6 +1,6 @@
 -- Phase 6: the outbox as the sender sees it.
 begin;
-select plan(21);
+select plan(22);
 
 select tests.create_user('Alice', 'America/New_York');
 select tests.create_user('Bob', 'America/Los_Angeles');
@@ -114,6 +114,8 @@ select results_eq($$select schedule from cron.job where jobname = 'send-notifica
                   'the sender runs every minute');
 select ok((select command from cron.job where jobname = 'send-notifications') like '%vault.decrypted_secrets%',
           'the schedule reads its URL and secret from Vault, not from the migration');
+select ok((select command from cron.job where jobname = 'send-notifications') like '%where exists%',
+          'and stays quiet until those secrets exist');
 
 select * from finish();
 rollback;

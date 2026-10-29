@@ -1,0 +1,2 @@
+-- Loaded by `supabase db reset` after the migrations. Intentionally empty:
+-- create test users from the app's developer sign-in instead.

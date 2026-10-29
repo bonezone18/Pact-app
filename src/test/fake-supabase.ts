@@ -6,6 +6,16 @@ type Result = { data: unknown; error: { message: string } | null };
 type Listener = (event: string, session: unknown) => void;
 type ChannelHandler = (payload: { new: Record<string, unknown> }) => void;
 
+type AuthResult = { data: { session: unknown }; error: { message: string } | null };
+const noAccount = async (_creds: { email: string; password: string }): Promise<AuthResult> => ({
+  data: { session: null },
+  error: { message: 'Invalid login credentials' },
+});
+const noSession = async (_args: { email: string; password: string; options?: unknown }): Promise<AuthResult> => ({
+  data: { session: null },
+  error: null,
+});
+
 export function createFakeSupabase() {
   let session: unknown = null;
   const listeners = new Set<Listener>();
@@ -43,6 +53,8 @@ export function createFakeSupabase() {
         return { data: { subscription: { unsubscribe: () => listeners.delete(listener) } } };
       }),
       signOut: jest.fn(async () => controls.setSession(null)),
+      signInWithPassword: jest.fn(noAccount),
+      signUp: jest.fn(noSession),
       startAutoRefresh: jest.fn(),
       stopAutoRefresh: jest.fn(),
     },
@@ -85,6 +97,10 @@ export function createFakeSupabase() {
       for (const k of Object.keys(tables)) delete tables[k];
       client.rpc.mockReset();
       client.rpc.mockImplementation(async () => ({ data: null, error: null }));
+      client.auth.signInWithPassword.mockReset();
+      client.auth.signInWithPassword.mockImplementation(noAccount);
+      client.auth.signUp.mockReset();
+      client.auth.signUp.mockImplementation(noSession);
       storageApi.upload.mockReset();
       storageApi.upload.mockImplementation(async () => ({ data: {}, error: null }));
       storageApi.remove.mockClear();
